@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Markdown viewer</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+		<script src="https://cdn.jsdelivr.net/npm/marked@5.1.1/marked.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/foundation.min.css">
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap">
+		<style>
+			body {
+				font-family: Roboto, Arial, sans-serif;
+				max-width: 500pt;
+				margin: auto;
+				padding: 0.5rem;
+				font-weight: 400;
+				line-height: 1.3;
+				color: #000;
+				background: #FFF;
+			}
+			h1, h2, h3, h4, h5 {
+				font-family: "Roboto Condensed", "Arial Narrow", sans-serif;
+				font-weight: 500;
+			}
+			h1 {
+				text-align: center;
+				font-weight: 300;
+				font-size: 2rem;
+			}
+			h2 {
+				border-bottom: 1px solid currentcolor;
+				font-weight: 350;
+			}
+			code {
+				font-family: "Roboto Mono", monospace;
+				font-optical-sizing: auto;
+				font-size: 0.85em;
+				letter-spacing: -0.03ex;
+				color: #810;
+			}
+			a[href] {
+				color: #05C;
+			}
+			img, video {
+				max-width: 100%;
+			}
+			#drop {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				box-sizing: border-box;
+				border: 5px dashed #000;
+				background: #DDD;
+			}
+		</style>
+	</head>
+	<body>
+		<label id="drop">
+			<h1>Drop <code>README.md</code> (or other Markdown) here</h1>
+			<input type="file" id="drop-file" accept=".md"/>
+		</label>
+		
+		<script>
+			function showText(mdText) {
+				document.body.innerHTML = marked.parse(mdText);
+				hljs.highlightAll();
+				document.title = document.querySelector('h1').textContent;
+			}
+			function showFile(file) {
+				if (!file) return;
+				let fr = new FileReader();
+				fr.addEventListener('load', e => showText(fr.result));
+				fr.readAsText(file);
+			}
+
+			const drop = document.querySelector("#drop");
+			function dragHandler(e) {
+				e.preventDefault();
+			}
+			function dropHandler(e) {
+				e.preventDefault();
+				let item = e.dataTransfer.items[0];
+				if (item && item.kind == 'file') showFile(item.getAsFile());
+			}
+			window.addEventListener('dragover', dragHandler);
+			window.addEventListener('drop', dropHandler);
+			drop.addEventListener('dragover', dragHandler);
+			drop.addEventListener('drop', dropHandler);
+			document.querySelector('#drop-file').addEventListener('change', e => {
+				showFile(e.target.files[0]);
+			});
+			
+			// Fetch and display adjacent README.md if we can, but don't care if it fails
+			fetch("./README.md").then(response => response.text()).then(showText);
+		</script>
+	</body>
+</html>
