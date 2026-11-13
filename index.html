@@ -102,7 +102,7 @@
 			});
 			
 			// Fetch and display adjacent README.md if we can, but don't care if it fails
-			fetch("./README.md").then(response => response.text()).then(showText);
+			fetch("./README.md").then(response => response.status < 400 && response.text()).then(showText);
 		</script>
 	</body>
 </html>
