@@ -63,12 +63,18 @@
 				border: 5px dashed #000;
 				background: #DDD;
 			}
+			#download-prompt {
+				display: none;
+				margin: 5%;
+				text-align: center;
+			}
 		</style>
 	</head>
 	<body>
 		<label id="drop">
 			<h1>Drop <code>README.md</code> (or other Markdown) here</h1>
 			<input type="file" id="drop-file" accept=".md"/>
+			<div id="download-prompt">If you have local resources, <a href="./" download="index.html"/>download this page</a><br> to the same directory as your README.</div>
 		</label>
 		
 		<script>
@@ -103,6 +109,12 @@
 			
 			// Fetch and display adjacent README.md if we can, but don't care if it fails
 			fetch("./README.md").then(response => response.status < 400 && response.text()).then(showText);
+			
+			if (!/^file:\/\//.test(location.href)) {
+				let prompt = document.querySelector('#download-prompt');
+				prompt.style.display = 'block';
+				prompt.querySelector('a').href = location.href;
+			}
 		</script>
 	</body>
 </html>
